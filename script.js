@@ -8,7 +8,7 @@ const questions = [
             { text: "Jean Jennings Bartik", correct: false }
         ]
     },
-    {   
+    {
         question: "What is the name of the first computer virus?",
         answers: [
             { text: "Creeper", correct: false },
@@ -53,6 +53,7 @@ const nextButton = document.getElementById('next-btn');
 
 let currentQuestionIndex = 0;
 let score = 0;
+let questionAnswered = false;
 
 function startQuiz() {
     currentQuestionIndex = 0;
@@ -72,7 +73,7 @@ function showQuestion() {
         button.innerHTML = answer.text;
         button.classList.add('btn');
         answerButtons.appendChild(button);
-        if(answer.correct) {
+        if (answer.correct) {
             button.dataset.correct = answer.correct;
         }
         button.addEventListener('click', selectAnswer);
@@ -80,27 +81,33 @@ function showQuestion() {
 }
 
 function resetState() {
+    questionAnswered = false;
     nextButton.style.display = 'none';
     while (answerButtons.firstChild) {
         answerButtons.removeChild(answerButtons.firstChild);
     }
-     document.querySelectorAll('.quiz .btn').forEach(button => button.style.display = 'none');
+    document.querySelectorAll('.quiz .btn').forEach(button => button.style.display = 'none');
 }
 
 function selectAnswer(e) {
+    if (questionAnswered) return;
+
     const selectedBtn = e.target;
     const isCorrect = selectedBtn.dataset.correct === "true";
-    if(isCorrect) {
+    if (isCorrect) {
         selectedBtn.classList.add('correct');
         score++;
-    }else{
+    } else {
         selectedBtn.classList.add('incorrect');
     }
     Array.from(answerButtons.children).forEach(button => {
-        if(button.dataset.correct === "true") {
+        if (button.dataset.correct === "true") {
             button.classList.add('correct');
         }
+        button.disabled = true;
     });
+
+    questionAnswered = true;
     nextButton.style.display = 'block';
 }
 
@@ -113,20 +120,20 @@ function showScore() {
 
 function handleNextButton() {
     currentQuestionIndex++;
-    if(currentQuestionIndex < questions.length) {
+    if (currentQuestionIndex < questions.length) {
         showQuestion();
-    }else{
+    } else {
         showScore();
     }
 }
 
 nextButton.addEventListener('click', () => {
 
-        if(currentQuestionIndex < questions.length){
-            handleNextButton();
-        }else{
-            startQuiz();
-        }
+    if (currentQuestionIndex < questions.length) {
+        handleNextButton();
+    } else {
+        startQuiz();
+    }
 });
 
 startQuiz();
